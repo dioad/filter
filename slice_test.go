@@ -17,6 +17,17 @@ func TestMatch(t *testing.T) {
 	}
 }
 
+func TestFilterSliceEmptyFilter(t *testing.T) {
+	input := []string{"a", "b", "c"}
+	expected := []string{"a", "b", "c"}
+
+	filtered := FilterSliceAnd(input, []func(string) bool{}...)
+
+	if !reflect.DeepEqual(expected, filtered) {
+		t.Errorf("expected %v, got %v", expected, filtered)
+	}
+}
+
 func TestFilterSlice(t *testing.T) {
 	input := []string{"a", "b", "c"}
 	expected := []string{"c"}
