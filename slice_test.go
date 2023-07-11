@@ -106,3 +106,75 @@ func TestFilterSliceNotAnd(t *testing.T) {
 		t.Errorf("expected %v, got %v", expected, filtered)
 	}
 }
+
+func aFunc(s string) func(string) bool {
+	return func(val string) bool {
+		return val == s
+	}
+}
+
+func TestSliceToOrFilterSimple(t *testing.T) {
+	input := []string{"a", "b", "c"}
+	filterValues := []string{"b", "c"}
+	expected := []string{"b", "c"}
+
+	filter := SliceToOrFilter(filterValues, aFunc)
+
+	filtered := FilterSlice(input, filter)
+
+	if !reflect.DeepEqual(expected, filtered) {
+		t.Errorf("expected %v, got %v", expected, filtered)
+	}
+}
+
+func TestSliceToOrFilter(t *testing.T) {
+	input := []sliceToFilterTestStruct{
+		{input: []string{"a", "b", "c"}},
+		{input: []string{"a", "c", "d"}},
+		{input: []string{"a", "c"}},
+	}
+	filterValues := []string{"b", "d"}
+	expected := []sliceToFilterTestStruct{
+		{input: []string{"a", "b", "c"}},
+		{input: []string{"a", "c", "d"}},
+	}
+
+	filter := SliceToOrFilter(filterValues, sliceToFilterTestFunc)
+
+	filtered := FilterSlice(input, filter)
+
+	if !reflect.DeepEqual(expected, filtered) {
+		t.Errorf("expected %v, got %v", expected, filtered)
+	}
+}
+
+type sliceToFilterTestStruct struct {
+	input []string
+}
+
+func sliceToFilterTestFunc(test string) func(sliceToFilterTestStruct) bool {
+	return func(val sliceToFilterTestStruct) bool {
+		filtered := FilterSlice(val.input, Equals(test))
+
+		return len(filtered) > 0
+	}
+}
+
+func TestSliceToAndFilter(t *testing.T) {
+	input := []sliceToFilterTestStruct{
+		{input: []string{"a", "b", "c"}},
+		{input: []string{"a", "c", "d"}},
+	}
+	filterValues := []string{"b", "c"}
+	expected := []sliceToFilterTestStruct{
+		{input: []string{"a", "b", "c"}},
+	}
+
+	filter := SliceToAndFilter(filterValues, sliceToFilterTestFunc)
+
+	filtered := FilterSlice(input, filter)
+
+	if !reflect.DeepEqual(expected, filtered) {
+		t.Errorf("expected %v, got %v", expected, filtered)
+	}
+}

@@ -52,3 +52,23 @@ func OneOnly[T any](l []T) (*T, error) {
 		return &l[0], nil
 	}
 }
+
+func SliceToOrFilter[T any, U any](list []T, filterFunc func(T) func(U) bool) func(U) bool {
+	filters := make([]func(U) bool, 0)
+
+	for _, item := range list {
+		filters = append(filters, filterFunc(item))
+	}
+
+	return orSelector(filters...)
+}
+
+func SliceToAndFilter[T any, U any](list []T, filterFunc func(T) func(U) bool) func(U) bool {
+	filters := make([]func(U) bool, 0)
+
+	for _, item := range list {
+		filters = append(filters, filterFunc(item))
+	}
+
+	return andSelector(filters...)
+}
