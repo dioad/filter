@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 )
@@ -176,5 +177,42 @@ func TestSliceToAndFilter(t *testing.T) {
 
 	if !reflect.DeepEqual(expected, filtered) {
 		t.Errorf("expected %v, got %v", expected, filtered)
+	}
+}
+
+func TestOneOnly(t *testing.T) {
+	input := []string{"a"}
+	expected := "a"
+
+	filtered, err := OneOnly(input)
+
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
+	if *filtered != expected {
+		t.Errorf("expected %v, got %v", expected, filtered)
+	}
+}
+
+func TestOneOnlyNoElements(t *testing.T) {
+	input := []string{}
+	expected := ErrNoElement
+
+	_, err := OneOnly(input)
+
+	if !errors.Is(err, expected) {
+		t.Errorf("expected %v, got %v", expected, err)
+	}
+}
+
+func TestOneOnlyTooManyElements(t *testing.T) {
+	input := []string{"a", "b"}
+	expected := ErrTooManyElements
+
+	_, err := OneOnly(input)
+
+	if !errors.Is(err, expected) {
+		t.Errorf("expected %v, got %v", expected, err)
 	}
 }
