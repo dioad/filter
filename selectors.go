@@ -21,6 +21,10 @@ func selector[T any](initialValue bool, combine func(bool, bool) bool, filters .
 	}
 }
 
+func And[T any](filters ...func(T) bool) func(T) bool {
+	return selector(true, and, filters...)
+}
+
 // andSelector is a convenience function for combining multiple filters with AND
 func andSelector[T any](filters ...func(T) bool) func(T) bool {
 	return selector(true, and, filters...)
