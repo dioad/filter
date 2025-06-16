@@ -19,25 +19,73 @@ func TestMatch(t *testing.T) {
 }
 
 func TestFilterSliceEmptyFilter(t *testing.T) {
-	input := []string{"a", "b", "c"}
-	expected := []string{"a", "b", "c"}
+	t.Run("with AND operation", func(t *testing.T) {
+		input := []string{"a", "b", "c"}
+		expected := []string{"a", "b", "c"}
 
-	filtered := FilterSliceAnd(input, []func(string) bool{}...)
+		filtered := FilterSliceAnd(input, []func(string) bool{}...)
 
-	if !reflect.DeepEqual(expected, filtered) {
-		t.Errorf("expected %v, got %v", expected, filtered)
-	}
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
+
+	t.Run("with OR operation", func(t *testing.T) {
+		input := []string{"a", "b", "c"}
+		expected := []string{}
+
+		filtered := FilterSliceOr(input, []func(string) bool{}...)
+
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
 }
 
 func TestFilterSlice(t *testing.T) {
-	input := []string{"a", "b", "c"}
-	expected := []string{"c"}
+	t.Run("basic filtering", func(t *testing.T) {
+		input := []string{"a", "b", "c"}
+		expected := []string{"c"}
 
-	filtered := FilterSlice(input, match("c"))
+		filtered := FilterSlice(input, match("c"))
 
-	if !reflect.DeepEqual(expected, filtered) {
-		t.Errorf("expected %v, got %v", expected, filtered)
-	}
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
+
+	t.Run("empty slice", func(t *testing.T) {
+		input := []string{}
+		expected := []string{}
+
+		filtered := FilterSlice(input, match("c"))
+
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
+
+	t.Run("no matches", func(t *testing.T) {
+		input := []string{"a", "b", "c"}
+		expected := []string{}
+
+		filtered := FilterSlice(input, match("d"))
+
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
+
+	t.Run("all matches", func(t *testing.T) {
+		input := []string{"a", "a", "a"}
+		expected := []string{"a", "a", "a"}
+
+		filtered := FilterSlice(input, match("a"))
+
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
 }
 
 func TestFilterSliceAnd(t *testing.T) {

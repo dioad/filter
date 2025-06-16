@@ -6,20 +6,67 @@ import (
 )
 
 func TestFilterMap(t *testing.T) {
-	input := map[int]string{
-		1: "a",
-		2: "b",
-		3: "c",
-	}
-	expected := map[int]string{
-		3: "c",
-	}
+	t.Run("basic filtering", func(t *testing.T) {
+		input := map[int]string{
+			1: "a",
+			2: "b",
+			3: "c",
+		}
+		expected := map[int]string{
+			3: "c",
+		}
 
-	filtered := FilterMap(input, match("c"))
+		filtered := FilterMap(input, match("c"))
 
-	if !reflect.DeepEqual(expected, filtered) {
-		t.Errorf("expected %v, got %v", expected, filtered)
-	}
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
+
+	t.Run("empty map", func(t *testing.T) {
+		input := map[int]string{}
+		expected := map[int]string{}
+
+		filtered := FilterMap(input, match("c"))
+
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
+
+	t.Run("no matches", func(t *testing.T) {
+		input := map[int]string{
+			1: "a",
+			2: "b",
+			3: "c",
+		}
+		expected := map[int]string{}
+
+		filtered := FilterMap(input, match("d"))
+
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
+
+	t.Run("all matches", func(t *testing.T) {
+		input := map[int]string{
+			1: "a",
+			2: "a",
+			3: "a",
+		}
+		expected := map[int]string{
+			1: "a",
+			2: "a",
+			3: "a",
+		}
+
+		filtered := FilterMap(input, match("a"))
+
+		if !reflect.DeepEqual(expected, filtered) {
+			t.Errorf("expected %v, got %v", expected, filtered)
+		}
+	})
 }
 
 func TestFilterMapAnd(t *testing.T) {
